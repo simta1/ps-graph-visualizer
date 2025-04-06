@@ -9,13 +9,13 @@ function setup() {
     createCanvas(windowWidth, windowHeight - PADDING);
     graph = new Graph();
 
-    const buttonWrapper = createDiv().style('display', 'flex').style('justify-content', 'space-between').style('width', '100%').style('margin-top', '10px');
+    const controls = createDiv().style('display', 'flex').style('justify-content', 'space-between').style('width', '100%').style('margin-top', '4px');
 
-    const leftControls = createDiv().parent(buttonWrapper); // 좌측
+    const leftControls = createDiv().parent(controls); // 좌측
     addVertexBtn = createButton("정점 추가(v)").parent(leftControls);
     edgeModeToggle = createCheckbox("간선 추가 모드(e)", false).parent(leftControls);
 
-    const rightControls = createDiv().parent(buttonWrapper); // 우측
+    const rightControls = createDiv().parent(controls); // 우측
     arrangeBtn = createButton("정점 정렬(s)").parent(rightControls);
     undoBtn = createButton("실행 취소(z)").parent(rightControls);
     const animationContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
@@ -31,7 +31,7 @@ function setup() {
     });
 
     arrangeBtn.elt.addEventListener("click", () => {
-        graph.arrangeVertices();
+        graph.arrangeVertices(min(height, width) / 2 - vertexRadius * 3);
     });
     undoBtn.elt.addEventListener("click", () => {
         graph.undo();
