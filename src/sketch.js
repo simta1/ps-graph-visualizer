@@ -93,7 +93,7 @@ function mousePressed() {
     }
     else {
         selectedVertex = graph.getVertexUnderMouse();
-        graph.backupVertexPositions(selectedVertex);
+        if (selectedVertex) graph.backupVertexPositions(selectedVertex);
     }
 }
 
