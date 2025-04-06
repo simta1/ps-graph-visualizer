@@ -23,7 +23,8 @@ function setup() {
     animationLabel = createSpan(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`).parent(animationContainer);
 
     addVertexBtn.elt.addEventListener("click", () => {
-        graph.addVertex(constrain(mouseX, vertexRadius, width - vertexRadius), constrain(mouseY, vertexRadius, height - vertexRadius));
+        if (between(mouseX, vertexRadius * 2, width - vertexRadius * 2) && between(mouseY, vertexRadius * 2, height - vertexRadius * 2)) graph.addVertex(mouseX, mouseY);
+        else graph.addVertex(width / 2, height / 2);
     });
     edgeModeToggle.changed(() => {
         isAddEdgeMode = edgeModeToggle.checked();
