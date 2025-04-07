@@ -3,30 +3,41 @@ let addVertexBtn, edgeModeToggle;
 let arrangeBtn, undoBtn, redoBtn, animationToggle;
 let edgeStartVertex = null;
 
-const PADDING = 100;
-
 function setup() {
-    createCanvas(windowWidth, windowHeight - PADDING);
+    createCanvas(0, 0);
     graph = new Graph();
 
-    const controls = createDiv().style('display', 'flex').style('justify-content', 'space-between').style('width', '100%').style('margin-top', '4px');
+    const controls = createDiv()
+        .style('display', 'flex')
+        .style('justify-content', 'space-between')
+        .style('width', '100%')
+        .style('border-bottom', '2px solid black')
+        .style('margin-top', '4px')
+        .style('margin-bottom', '4px');
 
     const leftControls = createDiv().parent(controls); // 좌측
     addVertexBtn = createButton("정점 추가(v)").parent(leftControls);
-    edgeModeToggle = createCheckbox("간선 추가 모드(e)", false).parent(leftControls);
+    arrangeBtn = createButton("정점 정렬(s)").parent(leftControls);
+    createElement('br').parent(leftControls);
+    undoBtn = createButton("실행 취소(z)").parent(leftControls);
+    redoBtn = createButton("다시 실행(y)").parent(leftControls);
 
     const rightControls = createDiv().parent(controls); // 우측
-    arrangeBtn = createButton("정점 정렬(s)").parent(rightControls);
-    undoBtn = createButton("실행 취소(z)").parent(rightControls);
-    redoBtn = createButton("다시 실행(y)").parent(rightControls);
-    const animationContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
+    edgeModeToggle = createCheckbox("간선 추가 모드(e)", false).parent(rightControls);
+    const animationContainer = createDiv().style('display', 'inline-flex').style('align-items', 'center').parent(rightControls);
     animationToggle = createCheckbox('', false).parent(animationContainer);
     animationLabel = createSpan(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`).parent(animationContainer);
+
+    setTimeout(() => {
+        const PADDING = controls.elt.offsetHeight;
+        resizeCanvas(windowWidth, windowHeight - PADDING - 20);
+    }, 0);
 
     addVertexBtn.elt.addEventListener("click", () => {
         if (between(mouseX, vertexRadius * 2, width - vertexRadius * 2) && between(mouseY, vertexRadius * 2, height - vertexRadius * 2)) graph.addVertex(mouseX, mouseY);
         else graph.addVertex(width / 2, height / 2);
     });
+
     edgeModeToggle.changed(() => {
         isAddEdgeMode = edgeModeToggle.checked();
         selectedVertex = edgeStartVertex = null;
@@ -35,12 +46,15 @@ function setup() {
     arrangeBtn.elt.addEventListener("click", () => {
         graph.arrangeVertices(min(height, width) / 2 - vertexRadius * 3);
     });
+    
     undoBtn.elt.addEventListener("click", () => {
         graph.undo();
     });
+    
     redoBtn.elt.addEventListener("click", () => {
         graph.redo();
     });
+
     animationToggle.changed(() => {
         animationMode = animationToggle.checked() ? AnimationMode.ELLIPSE : AnimationMode.LINE;
         animationLabel.html(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`);
