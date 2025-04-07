@@ -1,6 +1,6 @@
 let graph;
-let addVertexBtn, edgeModeToggle;
-let arrangeBtn, undoBtn, redoBtn, animationToggle;
+let addVertexBtn, arrangeBtn, undoBtn, redoBtn;
+let edgeModeToggle, directedLabel, directedToggle, animationLabel, animationToggle;
 let edgeStartVertex = null;
 
 function setup() {
@@ -23,9 +23,12 @@ function setup() {
     redoBtn = createButton("다시 실행(y)").parent(leftControls);
 
     const rightControls = createDiv().parent(controls); // 우측
-    edgeModeToggle = createCheckbox("간선 추가 모드(e)", false).parent(rightControls);
-    const animationContainer = createDiv().style('display', 'inline-flex').style('align-items', 'center').parent(rightControls);
-    animationToggle = createCheckbox('', false).parent(animationContainer);
+    edgeModeToggle = createCheckbox("간선 추가 모드(e)", isAddEdgeMode).parent(rightControls);
+    const directedContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
+    directedToggle = createCheckbox('', directed).parent(directedContainer);
+    directedLabel = createSpan(`간선방향여부 : ${directed ? '유향' : '무향'} (d)`).parent(directedContainer);
+    const animationContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
+    animationToggle = createCheckbox('', animationMode === Animation.ELLIPSE).parent(animationContainer);
     animationLabel = createSpan(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`).parent(animationContainer);
 
     setTimeout(() => {
@@ -38,11 +41,6 @@ function setup() {
         else graph.addVertex(width / 2, height / 2);
     });
 
-    edgeModeToggle.changed(() => {
-        isAddEdgeMode = edgeModeToggle.checked();
-        selectedVertex = edgeStartVertex = null;
-    });
-
     arrangeBtn.elt.addEventListener("click", () => {
         graph.arrangeVertices(min(height, width) / 2 - vertexRadius * 3);
     });
@@ -53,6 +51,16 @@ function setup() {
     
     redoBtn.elt.addEventListener("click", () => {
         graph.redo();
+    });
+
+    edgeModeToggle.changed(() => {
+        isAddEdgeMode = edgeModeToggle.checked();
+        selectedVertex = edgeStartVertex = null;
+    });
+
+    directedToggle.changed(() => {
+        directed = directedToggle.checked();
+        directedLabel.html(`간선방향여부 : ${directed ? '유향' : '무향'} (d)`);
     });
 
     animationToggle.changed(() => {
@@ -68,6 +76,10 @@ function setup() {
         else if (e.key === "e" || e.key === "E") {
             edgeModeToggle.checked(!edgeModeToggle.checked());
             edgeModeToggle.elt.dispatchEvent(new Event("change"));
+        }
+        else if (e.key === "d" || e.key === "D") {
+            directedToggle.checked(!directedToggle.checked());
+            directedToggle.elt.dispatchEvent(new Event("change"));
         }
         else if (e.key === "a" || e.key === "A") {
             animationToggle.checked(!animationToggle.checked());

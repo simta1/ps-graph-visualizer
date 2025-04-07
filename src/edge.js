@@ -1,8 +1,9 @@
+let directed = false;
+
 class Edge {
-    constructor(u, v, dir = 0, w = 0) {
+    constructor(u, v, w) {
         this.from = u;
         this.to = v;
-        this.dir = dir;
         this.weight = w;
     }
 
@@ -14,7 +15,7 @@ class Edge {
         rotate(atan2(this.to.x - this.from.x, - this.to.y + this.from.y) - PI / 2);
             const edgeLength = dist(this.from.x, this.from.y, this.to.x, this.to.y) - 2 * vertexRadius;
             line(vertexRadius, 0, vertexRadius + edgeLength, 0);
-            if (this.dir) {
+            if (directed) {
                 line(vertexRadius + edgeLength - 10, -10, vertexRadius + edgeLength, 0);
                 line(vertexRadius + edgeLength - 10, +10, vertexRadius + edgeLength, 0);
             }

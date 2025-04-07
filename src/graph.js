@@ -59,9 +59,9 @@ class Graph {
         if (!isRedo) this.redoStack = [];
     }
 
-    addEdge(u, v) {
+    addEdge(u, v, w = 0) {
         if (u == v) return;
-        const edge = new Edge(u, v);
+        const edge = new Edge(u, v, w);
         this._addEdge(edge);
     }
 
