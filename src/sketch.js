@@ -99,11 +99,27 @@ function mousePressed() {
     }
     else {
         selectedVertex = graph.getVertexUnderMouse();
-        if (selectedVertex) graph.backupVertexPositions(selectedVertex);
+        if (selectedVertex) graph.backupVertexPositions();
     }
 }
 
 function mouseReleased() {
+    selectedVertex = null;
+}
+
+// 정점이동기능 모바일 지원용
+function touchStarted() {
+    if (!isAddEdgeMode) {
+        selectedVertex = graph.getVertexUnderMouse();
+        if (selectedVertex) graph.backupVertexPositions();
+    }
+    return false;
+}
+function touchMoved() {
+    if (selectedVertex) selectedVertex.setPosition(mouseX, mouseY);
+    return false;
+}
+function touchEnded() {
     selectedVertex = null;
 }
 
