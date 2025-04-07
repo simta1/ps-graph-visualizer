@@ -1,6 +1,6 @@
 let graph;
 let addVertexBtn, edgeModeToggle;
-let arrangeBtn, undoBtn, animationToggle;
+let arrangeBtn, undoBtn, redoBtn, animationToggle;
 let edgeStartVertex = null;
 
 const PADDING = 100;
@@ -18,6 +18,7 @@ function setup() {
     const rightControls = createDiv().parent(controls); // 우측
     arrangeBtn = createButton("정점 정렬(s)").parent(rightControls);
     undoBtn = createButton("실행 취소(z)").parent(rightControls);
+    redoBtn = createButton("다시 실행(y)").parent(rightControls);
     const animationContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
     animationToggle = createCheckbox('', false).parent(animationContainer);
     animationLabel = createSpan(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`).parent(animationContainer);
@@ -36,7 +37,10 @@ function setup() {
     });
     undoBtn.elt.addEventListener("click", () => {
         graph.undo();
-    })
+    });
+    redoBtn.elt.addEventListener("click", () => {
+        graph.redo();
+    });
     animationToggle.changed(() => {
         animationMode = animationToggle.checked() ? AnimationMode.ELLIPSE : AnimationMode.LINE;
         animationLabel.html(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`);
@@ -46,6 +50,7 @@ function setup() {
         if (e.key === "v" || e.key === "V") addVertexBtn.elt.click();
         else if (e.key === "s" || e.key === "S") arrangeBtn.elt.click();
         else if (e.key === "z" || e.key === "Z") undoBtn.elt.click();
+        else if (e.key === "y" || e.key === "Y") redoBtn.elt.click();
         else if (e.key === "e" || e.key === "E") {
             edgeModeToggle.checked(!edgeModeToggle.checked());
             edgeModeToggle.elt.dispatchEvent(new Event("change"));

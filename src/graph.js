@@ -1,12 +1,14 @@
 let timer = new Timer(false);
 let animationTime = 30;
 let animationUndoTime = 10;
+let animationRedoTime = 10;
 
 class Graph {
     constructor() {
         this.vertices = [];
         this.edges = [];
         this.undoStack = [];
+        this.redoStack = [];
     }
 
     run() {
@@ -30,25 +32,51 @@ class Graph {
     undo() {
         if (this.undoStack.length === 0) return;
         const action = this.undoStack.pop();
+        // console.log("undo", this.undoStack.length, action);
         action();
     }
+
+    redo() {
+        if (this.redoStack.length === 0) return;
+        const action = this.redoStack.pop();
+        // console.log("redo", this.redoStack.length, action);
+        action();
+    }    
     
     addVertex(x, y) {
         const vertex = new Vertex(x, y, this.vertices.length + 1);
+        this._addVertex(vertex);
+    }
+    
+    _addVertex(vertex, isRedo = false) {
         this.vertices.push(vertex);
-        this.undoStack.push(() => { this.vertices.pop(); });
+
+        this.undoStack.push(() => {
+            const popped = this.vertices.pop();
+            this.redoStack.push(() => this._addVertex(popped, true));
+        });
         if (this.undoStack.length > 200) this.undoStack.shift();
+        if (!isRedo) this.redoStack = [];
     }
 
     addEdge(u, v) {
         if (u == v) return;
         const edge = new Edge(u, v);
-        this.edges.push(edge);
-        this.undoStack.push(() => { this.edges.pop(); });
-        if (this.undoStack.length > 200) this.undoStack.shift();
+        this._addEdge(edge);
     }
 
-    arrangeVertices(radius=150) {
+    _addEdge(edge, isRedo = false) {
+        this.edges.push(edge);
+
+        this.undoStack.push(() => { 
+            const popped = this.edges.pop();
+            this.redoStack.push(() => this._addEdge(popped, true));
+        });
+        if (this.undoStack.length > 200) this.undoStack.shift();
+        if (!isRedo) this.redoStack = [];
+    }
+
+    arrangeVertices(radius = 150) {
         this.backupVertexPositions();
         for (let i = 0; i < this.vertices.length; i++) {
             let theta = 1.5 * PI - 2 * PI * i / (this.vertices.length);
@@ -60,13 +88,20 @@ class Graph {
         timer.start(animationTime);
     }
     
-    backupVertexPositions() {
+    backupVertexPositions(isRedo = false) {
         const snapshot = this.vertices.map(v => ({ v: v, x: v.x, y: v.y }));
         this.undoStack.push(() => {
+            const redoSnap = this.vertices.map(v => ({ v, x: v.x, y: v.y }));
             for (const {v, x, y} of snapshot) v.setTargetPosition(x, y);
             timer.start(animationUndoTime);
+            this.redoStack.push(() => {
+                this.backupVertexPositions(true);
+                for (const {v, x, y} of redoSnap) v.setTargetPosition(x, y);
+                timer.start(animationRedoTime);
+            });
         });
         if (this.undoStack.length > 200) this.undoStack.shift();
+        if (!isRedo) this.redoStack = [];
     }
 
     update() {
