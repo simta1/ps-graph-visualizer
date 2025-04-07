@@ -109,6 +109,7 @@ function mouseReleased() {
 
 // 정점이동기능 모바일 지원용
 function touchStarted() {
+    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
     if (!isAddEdgeMode) {
         selectedVertex = graph.getVertexUnderMouse();
         if (selectedVertex) graph.backupVertexPositions();
@@ -116,11 +117,14 @@ function touchStarted() {
     return false;
 }
 function touchMoved() {
+    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
     if (selectedVertex) selectedVertex.setPosition(mouseX, mouseY);
     return false;
 }
 function touchEnded() {
+    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
     selectedVertex = null;
+    return false;
 }
 
 // function init(input) {
