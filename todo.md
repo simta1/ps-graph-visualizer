@@ -1,3 +1,4 @@
+### feat
 정점 선택 후 connected component 자동으로 같이 선택해주는 거   
 connected component에 대해 트리구조로 나열하거나 원형으로 나열하거나 등등   
 
@@ -19,4 +20,5 @@ um vm wm
 간선 가중치 수정 가능하게   
 간선 가중치 출력할지말지 설정 가능하게   
 
-음..   
+### fix
+모바일: 버튼 누르고 나서 hover취소 안됨
