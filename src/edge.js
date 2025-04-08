@@ -1,4 +1,8 @@
 let directed = true;
+let arrowLength = 10;
+let arrowAngle = Math.PI / 8;
+let arrowLenX = arrowLength * Math.cos(arrowAngle);
+let arrowLenY = arrowLength * Math.sin(arrowAngle);
 
 class Edge {
     constructor(u, v, w) {
@@ -16,8 +20,8 @@ class Edge {
             const edgeLength = dist(this.from.x, this.from.y, this.to.x, this.to.y) - 2 * vertexRadius;
             line(vertexRadius, 0, vertexRadius + edgeLength, 0);
             if (directed) {
-                line(vertexRadius + edgeLength - 10, -10, vertexRadius + edgeLength, 0);
-                line(vertexRadius + edgeLength - 10, +10, vertexRadius + edgeLength, 0);
+                line(vertexRadius + edgeLength - arrowLenX, -arrowLenY, vertexRadius + edgeLength, 0);
+                line(vertexRadius + edgeLength - arrowLenX, +arrowLenY, vertexRadius + edgeLength, 0);
             }
         pop();
 
