@@ -80,7 +80,6 @@ class Graph {
     }
 
     addEdge(u, v, w = 0) {
-        if (u == v) return;
         const edge = new Edge(u, v, w);
         this._addEdge(edge);
     }

@@ -156,7 +156,7 @@ function mousePressed() {
             let v = graph.getVertexUnderMouse();
             if (v) {
                 if (!edgeStartVertex) edgeStartVertex = v;
-                else {
+                else if (edgeStartVertex !== v) {
                     graph.addEdge(edgeStartVertex, v);
                     edgeStartVertex = null;
                 }
