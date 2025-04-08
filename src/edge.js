@@ -1,4 +1,4 @@
-let directed = false;
+let directed = true;
 
 class Edge {
     constructor(u, v, w) {

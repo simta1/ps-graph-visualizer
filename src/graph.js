@@ -1,7 +1,8 @@
 let timer = new Timer(false);
-let animationTime = 30;
+let animationTime = 30; // 나중에 스크롤바로 변경하는 기능 넣을 듯도 해서 일단 const안썼음
 let animationUndoTime = 10;
 let animationRedoTime = 10;
+const UNDO_LIMIT = 500;
 
 class Graph {
     constructor() {
@@ -74,7 +75,7 @@ class Graph {
             const popped = this.vertices.pop();
             this.redoStack.push(() => this._addVertex(popped, true));
         });
-        if (this.undoStack.length > 200) this.undoStack.shift();
+        if (this.undoStack.length > UNDO_LIMIT) this.undoStack.shift();
         if (!isRedo) this.redoStack = [];
     }
 
@@ -97,7 +98,7 @@ class Graph {
             popped.to.udj.pop();
             this.redoStack.push(() => this._addEdge(popped, true));
         });
-        if (this.undoStack.length > 200) this.undoStack.shift();
+        if (this.undoStack.length > UNDO_LIMIT) this.undoStack.shift();
         if (!isRedo) this.redoStack = [];
     }
 
@@ -125,7 +126,7 @@ class Graph {
                 timer.start(animationRedoTime);
             });
         });
-        if (this.undoStack.length > 200) this.undoStack.shift();
+        if (this.undoStack.length > UNDO_LIMIT) this.undoStack.shift();
         if (!isRedo) this.redoStack = [];
     }
 

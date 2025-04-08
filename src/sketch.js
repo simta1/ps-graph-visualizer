@@ -179,11 +179,6 @@ function touchStarted() {
     mousePressed();
     return false;
 }
-// function touchMoved() {
-//     if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
-//     if (selectedVertex) selectedVertex.setPosition(mouseX, mouseY);
-//     return false;
-// }
 function touchEnded() {
     if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
     selectedVertex = null;
