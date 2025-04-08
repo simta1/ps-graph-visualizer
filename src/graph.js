@@ -9,6 +9,7 @@ class Graph {
         this.edges = [];
         this.undoStack = [];
         this.redoStack = [];
+        this.visitValue = 1;
     }
 
     run() {
@@ -18,7 +19,7 @@ class Graph {
     
     display() {
         for (let edge of this.edges) edge.display();
-        for (let vertex of this.vertices) vertex.display();
+        for (let vertex of this.vertices) vertex.display(this.visitValue);
     }
 
     getVertexUnderMouse() {
@@ -27,6 +28,24 @@ class Graph {
             if (v.mouseIn()) return v;
         }
         return null;
+    }
+
+    deselect() {
+        ++this.visitValue;
+    }
+
+    selectConnectedComponent(vertex) {
+        ++this.visitValue;
+        const component = [];
+
+        const dfs = (cur) => {
+            cur.visited = this.visitValue;
+            component.push(cur);
+            for (const { next } of cur.udj) if (next.visited !== this.visitValue) dfs(next);
+        };
+        dfs(vertex);
+        
+        return component;
     }
 
     undo() {
@@ -67,9 +86,15 @@ class Graph {
 
     _addEdge(edge, isRedo = false) {
         this.edges.push(edge);
+        edge.from.adj.push({ next: edge.to, edge: edge });
+        edge.from.udj.push({ next: edge.to, edge: edge });
+        edge.to.udj.push({ next: edge.from, edge: edge });
 
         this.undoStack.push(() => { 
             const popped = this.edges.pop();
+            popped.from.adj.pop();
+            popped.from.udj.pop();
+            popped.to.udj.pop();
             this.redoStack.push(() => this._addEdge(popped, true));
         });
         if (this.undoStack.length > 200) this.undoStack.shift();

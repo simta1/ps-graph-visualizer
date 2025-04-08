@@ -1,4 +1,5 @@
 let isAddEdgeMode = false;
+let componentSelectMode = false;
 
 const AnimationMode = {
     LINE: 0,

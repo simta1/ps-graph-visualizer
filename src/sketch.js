@@ -1,7 +1,10 @@
 let graph;
-let addVertexBtn, arrangeBtn, undoBtn, redoBtn;
-let edgeModeToggle, directedLabel, directedToggle, animationLabel, animationToggle;
 let edgeStartVertex = null;
+let selectedComponent = null;
+
+let addVertexBtn, arrangeBtn, undoBtn, redoBtn;
+let componentSelectBtn, dfsTreeBtn;
+let edgeModeToggle, directedLabel, directedToggle, animationLabel, animationToggle;
 
 function setup() {
     createCanvas(0, 0);
@@ -21,6 +24,7 @@ function setup() {
     createElement('br').parent(leftControls);
     undoBtn = createButton("실행 취소(z)").parent(leftControls);
     redoBtn = createButton("다시 실행(y)").parent(leftControls);
+    componentSelectBtn = createButton("연결요소 선택(c)").parent(leftControls);
 
     const rightControls = createDiv().parent(controls); // 우측
     edgeModeToggle = createCheckbox("간선 추가 모드(e)", isAddEdgeMode).parent(rightControls);
@@ -46,16 +50,30 @@ function setup() {
     });
     
     undoBtn.elt.addEventListener("click", () => {
+        componentSelectMode = false;
         graph.undo();
     });
     
     redoBtn.elt.addEventListener("click", () => {
+        componentSelectMode = false;
         graph.redo();
+    });
+
+    componentSelectBtn.elt.addEventListener("click", () => {
+        if (isAddEdgeMode) {
+            edgeModeToggle.checked(!edgeModeToggle.checked());
+            edgeModeToggle.elt.dispatchEvent(new Event("change"));
+        }
+        graph.deselect();
+        componentSelectMode = true;
+        selectedComponent = null;
     });
 
     edgeModeToggle.changed(() => {
         isAddEdgeMode = edgeModeToggle.checked();
         selectedVertex = edgeStartVertex = null;
+        graph.deselect();
+        componentSelectMode = false;
     });
 
     directedToggle.changed(() => {
@@ -73,6 +91,7 @@ function setup() {
         else if (e.key === "s" || e.key === "S") arrangeBtn.elt.click();
         else if (e.key === "z" || e.key === "Z") undoBtn.elt.click();
         else if (e.key === "y" || e.key === "Y") redoBtn.elt.click();
+        else if (e.key === "c" || e.key === "C") componentSelectBtn.elt.click();
         else if (e.key === "e" || e.key === "E") {
             edgeModeToggle.checked(!edgeModeToggle.checked());
             edgeModeToggle.elt.dispatchEvent(new Event("change"));
@@ -101,7 +120,13 @@ function draw() {
     noFill();
     rect(0, 0, width, height, 3, 3, 3, 3);
     
-    if (selectedVertex) selectedVertex.setPosition(mouseX, mouseY);
+    if (selectedVertex) {
+        if (componentSelectMode && selectedComponent !== null) {
+            const { dx, dy } = selectedVertex.getDiff(mouseX, mouseY);
+            for (let v of selectedComponent) v.translate(dx, dy);
+        }
+        else selectedVertex.setPosition(mouseX, mouseY);
+    }
 
     graph.run();
 
@@ -112,20 +137,35 @@ function draw() {
 }
 
 function mousePressed() {
-    if (isAddEdgeMode) {
-        let v = graph.getVertexUnderMouse();
-        if (v) {
-            if (!edgeStartVertex) edgeStartVertex = v;
-            else {
-                graph.addEdge(edgeStartVertex, v);
-                edgeStartVertex = null;
-                // window.dispatchEvent(new KeyboardEvent("keydown", { key: "e" }));
+    if (componentSelectMode) {
+        if (selectedComponent === null) {
+            let v = graph.getVertexUnderMouse();
+            if (v) selectedComponent = graph.selectConnectedComponent(v);
+            else componentSelectMode = false;
+        }
+        else {
+            selectedVertex = graph.getVertexUnderMouse();
+            if (selectedVertex && selectedComponent.includes(selectedVertex)) {
+                graph.backupVertexPositions();
             }
+            else componentSelectMode = false;
         }
     }
     else {
-        selectedVertex = graph.getVertexUnderMouse();
-        if (selectedVertex) graph.backupVertexPositions();
+        if (isAddEdgeMode) {
+            let v = graph.getVertexUnderMouse();
+            if (v) {
+                if (!edgeStartVertex) edgeStartVertex = v;
+                else {
+                    graph.addEdge(edgeStartVertex, v);
+                    edgeStartVertex = null;
+                }
+            }
+        }
+        else {
+            selectedVertex = graph.getVertexUnderMouse();
+            if (selectedVertex) graph.backupVertexPositions();
+        }
     }
 }
 
@@ -139,11 +179,11 @@ function touchStarted() {
     mousePressed();
     return false;
 }
-function touchMoved() {
-    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
-    if (selectedVertex) selectedVertex.setPosition(mouseX, mouseY);
-    return false;
-}
+// function touchMoved() {
+//     if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
+//     if (selectedVertex) selectedVertex.setPosition(mouseX, mouseY);
+//     return false;
+// }
 function touchEnded() {
     if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
     selectedVertex = null;

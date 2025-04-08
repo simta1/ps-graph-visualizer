@@ -7,13 +7,22 @@ class Vertex {
         this.y = this.sy = this.ey = y;
         this.id = id;
         this.r = vertexRadius;
+        
+        this.adj = []; // 유향 그래프
+        this.udj = []; // 무향 그래프 // undirected adj 줄인거임
+        this.visited = 0;
     }
 
-    display() {
+    display(visitValue) {
         // 정점 출력
         fill(255);
-        if (this.mouseIn()) stroke(colorManager.getCurrentColor(100));
-        else stroke(0);
+        if (componentSelectMode && !selectedComponent) {
+            stroke(255, 0, 0);
+        }
+        else {
+            if (this.mouseIn()) stroke(colorManager.getCurrentColor(100));
+            else stroke(0);
+        }
         strokeWeight(2);
         circle(this.x, this.y, 2 * this.r);
         
@@ -24,7 +33,7 @@ class Vertex {
         noStroke();
         text(this.id, this.x, this.y);
 
-        if (this === selectedVertex) this.highlight();
+        if (this === selectedVertex || (componentSelectMode && this.visited == visitValue)) this.highlight();
     }
 
     mouseIn() {
@@ -40,6 +49,14 @@ class Vertex {
     setPosition(x, y) {
         this.x = this.sx = this.ex = x;
         this.y = this.sy = this.ey = y;
+    }
+
+    getDiff(x, y) {
+        return { dx: x - this.x, dy: y - this.y  };
+    }
+    
+    translate(dx, dy) {
+        this.setPosition(this.x + dx, this.y + dy);
     }
 
     setTargetPosition(x, y) {

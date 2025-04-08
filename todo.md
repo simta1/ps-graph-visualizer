@@ -1,4 +1,5 @@
 ### feat
+실행취소 하면 연결요소 선택 해제
 유향/무향 변경 가능하게 바꾸기
 
 정점 선택 후 connected component 자동으로 같이 선택해주는 거   
@@ -25,6 +26,7 @@ um vm wm
 
 ### fix
 지금은 self loop는 아예 addEdge안되게 막아뒀고 parallel edge는 막진 않았지만 화면상으로는 겹쳐져서 간선 하나처럼 보임.   
+간선 투명도 적용해둬서 여러개 겹쳐있으면 점점 진해지는데 이것도 이것대로 문제인듯   
 어케할지 정해야 될 듯   
 1. self loop 허용할거면 Edge.display()에서 self loop 전용 코드 추가해야 되서 귀찮아짐..   
 2. parallel edge 허용하는 경우도 여러개 있는 거 안 겹치고 따로 출력해야 되서 귀찮아짐x2   
