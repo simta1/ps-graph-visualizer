@@ -12,7 +12,7 @@ class Edge {
     }
 
     display() {
-        stroke(0, this.mouseIn() ? 255 : 120);
+        stroke(this.mouseIn() ? 0 : 180);
         strokeWeight(1);
         push();
         translate(this.from.x, this.from.y);
@@ -27,7 +27,7 @@ class Edge {
 
         textAlign(CENTER, CENTER);
         textSize(20);
-        fill(0, this.mouseIn() ? 255 : 50);
+        fill(this.mouseIn() ? 0 : 180);
         noStroke();
         text(this.weight, (this.from.x + this.to.x) / 2, (this.from.y + this.to.y) / 2);
     }
