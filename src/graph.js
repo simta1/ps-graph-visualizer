@@ -17,7 +17,16 @@ class Graph {
         this.update();
         this.display();
     }
-    
+
+    update() {
+        if (timer.isOver()) {
+            for (let v of this.vertices) v.moveToTargetPosition();
+        }
+        else {
+            for (let v of this.vertices) v.update(timer.getElapsedTimeByRate());
+        }
+    }
+
     display() {
         for (let edge of this.edges) edge.display();
         for (let vertex of this.vertices) vertex.display(this.visitValue);
@@ -127,14 +136,5 @@ class Graph {
         });
         if (this.undoStack.length > UNDO_LIMIT) this.undoStack.shift();
         if (!isRedo) this.redoStack = [];
-    }
-
-    update() {
-        if (timer.isOver()) {
-            for (let v of this.vertices) v.moveToTargetPosition();
-        }
-        else {
-            for (let v of this.vertices) v.update(timer.getElapsedTimeByRate());
-        }
     }
 }
