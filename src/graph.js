@@ -37,7 +37,7 @@ class Graph {
             for (let v of this.vertices) v.moveToTargetPosition();
         }
         else {
-            for (let v of this.vertices) v.update(timer.getElapsedTimeByRate());
+            for (let v of this.vertices) v.update(timer.getElapsedTimeRate());
         }
     }
 

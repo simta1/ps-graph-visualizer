@@ -20,7 +20,7 @@ class Timer {
         return true;
     }
 
-    getElapsedTimeByRate() {
+    getElapsedTimeRate() {
         return this.elapsedTime / this.endTime;
     }
 
