@@ -5,12 +5,26 @@ let animationRedoTime = 10;
 const UNDO_LIMIT = 500;
 
 class Graph {
-    constructor() {
+    constructor(n = 0, edges = []) {
         this.vertices = [];
         this.edges = [];
         this.undoStack = [];
         this.redoStack = [];
         this.visitValue = 1;
+
+        for (let i = 0; i < n; i++) {
+            const x = random(vertexRadius, width - vertexRadius);
+            const y = random(vertexRadius, height - vertexRadius);
+            this.addVertex(x, y);
+        }
+
+        for (let i = 0; i < edges.length; i++) {
+            const [u, v, w] = edges[i];
+            this.addEdge(this.vertices[u - 1], this.vertices[v - 1], w);
+        }
+        
+        this.undoStack = [];
+        this.redoStack = [];
     }
 
     run() {

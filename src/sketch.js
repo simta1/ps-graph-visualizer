@@ -6,9 +6,21 @@ let addVertexBtn, arrangeBtn, undoBtn, redoBtn;
 let componentSelectBtn, dfsTreeBtn;
 let edgeModeToggle, directedLabel, directedToggle, animationLabel, animationToggle;
 
+let graphInput, applyInputBtn;
+
 function setup() {
-    createCanvas(0, 0);
     graph = new Graph();
+
+    const canvasContainer = createDiv()
+        .id('canvas-container')
+        .style('display', 'flex')
+        .style('align-items', 'stretch'); // 자식 요소 높이 동일해짐
+
+    createCanvas(0, 0).parent(canvasContainer);
+    
+    const inputContainer = createDiv().parent(canvasContainer).style('display', 'flex').style('flex-direction', 'column');
+    graphInput = createElement('textarea').parent(inputContainer).style('resize', 'none');
+    applyInputBtn = createButton("그래프 생성").parent(inputContainer);
 
     const controls = createDiv()
         .style('display', 'flex')
@@ -18,15 +30,16 @@ function setup() {
         .style('margin-top', '4px')
         .style('margin-bottom', '4px');
 
-    const leftControls = createDiv().parent(controls); // 좌측
+    const leftControls = createDiv().parent(controls); // 좌측(버튼들)
     addVertexBtn = createButton("정점 추가(v)").parent(leftControls);
     arrangeBtn = createButton("정점 정렬(s)").parent(leftControls);
     createElement('br').parent(leftControls);
     undoBtn = createButton("실행 취소(z)").parent(leftControls);
     redoBtn = createButton("다시 실행(y)").parent(leftControls);
+    createElement('br').parent(leftControls);
     componentSelectBtn = createButton("연결요소 선택(c)").parent(leftControls);
 
-    const rightControls = createDiv().parent(controls); // 우측
+    const rightControls = createDiv().parent(controls); // 우측(토글바들)
     edgeModeToggle = createCheckbox("간선 추가 모드(e)", isAddEdgeMode).parent(rightControls);
     const directedContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
     directedToggle = createCheckbox('', directed).parent(directedContainer);
@@ -36,9 +49,31 @@ function setup() {
     animationLabel = createSpan(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`).parent(animationContainer);
 
     setTimeout(() => {
-        const PADDING = controls.elt.offsetHeight;
-        resizeCanvas(windowWidth, windowHeight - PADDING - 20);
+        const inputBoxWidth = min(windowWidth / 3, 300);
+        const canvasWidth = windowWidth - inputBoxWidth - 5;
+        const canvasHeight = windowHeight - controls.elt.offsetHeight - 20;
+        resizeCanvas(canvasWidth, canvasHeight);
+        inputContainer.style('width', `${inputBoxWidth}px`).style('height', `${canvasHeight}px`);
+        
+        applyInputBtn.style('margin-bottom', '0px');
+        const inputBoxHeight = canvasHeight - applyInputBtn.elt.offsetHeight;
+        graphInput.style('width', `${inputBoxWidth}px`).style('height', `${inputBoxHeight}px`)
+            .attribute('placeholder', `입력 형식:\nn m\nu1 v1 w1\nu2 v2 w2\n...\num vm wm\n(간선 가중치 없는 경우 w제외하고 입력)\n\nn: 정점 개수\nm: 간선 개수\nu: 간선 시작점\nv: 간선 도착점\nw: 간선 가중치\nn, m, u, v는 0 이상의 정수, w는 실수`);
     }, 0);
+
+    applyInputBtn.elt.addEventListener("click", () => {
+        const result = parseGraphInput();
+        if (!result) {
+            alert("입력 형식 잘못됨");
+            return;
+        }
+
+        if (!confirm("그래프 생성은 실행 취소가 불가능합니다.")) return;
+
+        componentSelectMode = false;
+        const { n, edges } = result;
+        graph = new Graph(n, edges);
+    });
 
     addVertexBtn.elt.addEventListener("click", () => {
         if (between(mouseX, vertexRadius * 2, width - vertexRadius * 2) && between(mouseY, vertexRadius * 2, height - vertexRadius * 2)) graph.addVertex(mouseX, mouseY);
@@ -87,6 +122,8 @@ function setup() {
     });
     
     window.addEventListener("keydown", (e) => {
+        if (document.activeElement === graphInput.elt) return; // textarea에 입력 중인 경우는 단축키로 취급 안함
+
         if (e.key === "v" || e.key === "V") addVertexBtn.elt.click();
         else if (e.key === "s" || e.key === "S") arrangeBtn.elt.click();
         else if (e.key === "z" || e.key === "Z") undoBtn.elt.click();
@@ -185,26 +222,25 @@ function touchEnded() {
     return false;
 }
 
-// function init(input) {
-//     /* input 구조
+function parseGraphInput() {
+    const lines = graphInput.value().trim().split('\n');
+    if (lines.length < 1) return null;
 
-//     n m     <- 노드 개수, 간선 개수
+    let [n, m] = lines[0].split(' ').map(Number);
+    if (![n, m].every(Number.isInteger)) return null;
 
-//     u v w   <- 간선 m개
-//     ...
+    const edges = [];
 
-//     */
+    for (let i = 1; i <= m && i < lines.length; i++) {
+        const tokens = lines[i].trim().split(' ').map(Number);
+        if (tokens.length < 2) return null;
 
-    
-//     const lines = input.replace(/\n+/g, '\n').split('\n');
-//     const [n, m] = lines[0].split(' ').map(Number);
-//     console.log(`Received n: ${n}, m: ${m}`);
+        const u = tokens[0], v = tokens[1], w = tokens[2] ?? 0;
+        if (![u, v].every(Number.isInteger) || Number.isNaN(w) || u <= 0 || v <= 0 || u == v) return null;
+        n = max(n, u);
+        n = max(n, v);
+        edges.push([u, v, w]);
+    }
 
-//     graph = new Graph(n);
-
-//     for (let i = 1; i <= m; i++) {
-//         const [u, v, w] = lines[i].split(' ').map(Number);
-//         console.log(`Received u: ${u}, v: ${v}, w: ${w}`);
-//         graph.addEdge(u, v, w);
-//     }
-// }
+    return { n, edges };
+}
