@@ -11,6 +11,39 @@ class Vertex {
         this.adj = []; // 유향 그래프
         this.udj = []; // 무향 그래프 // undirected adj 줄인거임
         this.visited = 0;
+
+        this.vel = createVector(0, 0);
+        this.acc = createVector(0, 0);
+    }
+
+    applyForce(force) {
+        this.acc.add(force);
+    }
+    
+    applyPhysics() {
+        let friction = this.vel.copy().mult(0.25);
+        this.acc.sub(friction);
+        this.vel.add(this.acc);
+        this.x += this.vel.x;
+        this.y += this.vel.y;
+        this.acc.mult(0);
+        
+        // const margin = vertexRadius;
+        // if (this.x < margin) {
+        //     this.x = margin;
+        //     this.vel.x *= -0.7; // 벽 반사, 약간 감쇠
+        // } else if (this.x > width - margin) {
+        //     this.x = width - margin;
+        //     this.vel.x *= -0.7;
+        // }
+
+        // if (this.y < margin) {
+        //     this.y = margin;
+        //     this.vel.y *= -0.7;
+        // } else if (this.y > height - margin) {
+        //     this.y = height - margin;
+        //     this.vel.y *= -0.7;
+        // }
     }
 
     display(visitValue) {

@@ -4,7 +4,7 @@ let selectedComponent = null;
 
 let addVertexBtn, arrangeBtn, undoBtn, redoBtn;
 let componentSelectBtn, dfsTreeBtn;
-let edgeModeToggle, directedLabel, directedToggle, animationLabel, animationToggle;
+let edgeModeToggle, directedLabel, directedToggle, physicsToggle, animationLabel, animationToggle;
 
 let graphInput, applyInputBtn;
 
@@ -43,7 +43,8 @@ function setup() {
     edgeModeToggle = createCheckbox("간선 추가 모드(e)", isAddEdgeMode).parent(rightControls);
     const directedContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
     directedToggle = createCheckbox('', directed).parent(directedContainer);
-    directedLabel = createSpan(`간선방향여부 : ${directed ? '유향' : '무향'} (d)`).parent(directedContainer);
+    directedLabel = createSpan('간선 방향 여부 (d)').parent(directedContainer);
+    physicsToggle = createCheckbox('물리 효과 적용 (p)').parent(rightControls);
     const animationContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
     animationToggle = createCheckbox('', animationMode === Animation.ELLIPSE).parent(animationContainer);
     animationLabel = createSpan(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`).parent(animationContainer);
@@ -76,7 +77,7 @@ function setup() {
     });
 
     addVertexBtn.elt.addEventListener("click", () => {
-        if (between(mouseX, vertexRadius * 2, width - vertexRadius * 2) && between(mouseY, vertexRadius * 2, height - vertexRadius * 2)) graph.addVertex(mouseX, mouseY);
+        if (between(mouseX, 0, width) && between(mouseY, 0, height)) graph.addVertex(mouseX, mouseY);
         else graph.addVertex(width / 2, height / 2);
     });
 
@@ -113,9 +114,12 @@ function setup() {
 
     directedToggle.changed(() => {
         directed = directedToggle.checked();
-        directedLabel.html(`간선방향여부 : ${directed ? '유향' : '무향'} (d)`);
     });
 
+    physicsToggle.changed(() => {
+        physicsOn = physicsToggle.checked();
+    });
+    
     animationToggle.changed(() => {
         animationMode = animationToggle.checked() ? AnimationMode.ELLIPSE : AnimationMode.LINE;
         animationLabel.html(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`);
@@ -137,11 +141,37 @@ function setup() {
             directedToggle.checked(!directedToggle.checked());
             directedToggle.elt.dispatchEvent(new Event("change"));
         }
+        else if (e.key === "p" || e.key === "P") {
+            physicsToggle.checked(!physicsToggle.checked());
+            physicsToggle.elt.dispatchEvent(new Event("change"));
+        }
         else if (e.key === "a" || e.key === "A") {
             animationToggle.checked(!animationToggle.checked());
             animationToggle.elt.dispatchEvent(new Event("change"));
         }
     });
+    
+    console.log(`물리 효과 테스트용 입력:
+17 19
+1 2
+2 3
+3 4
+4 5
+5 3
+1 3
+6 7
+7 8
+6 8
+8 9
+9 10
+10 11
+11 9
+12 13
+14 15
+15 16
+16 17
+14 17
+14 16`);
 }
 
 // function windowResized() {
@@ -151,11 +181,6 @@ function setup() {
 function draw() {
     background(255);
     colorManager.update();
-
-    stroke(0);
-    strokeWeight(3);
-    noFill();
-    rect(0, 0, width, height, 3, 3, 3, 3);
     
     if (selectedVertex) {
         if (componentSelectMode && selectedComponent !== null) {
@@ -171,6 +196,11 @@ function draw() {
         stroke(colorManager.getCurrentColor());
         dottedLine(edgeStartVertex.x, edgeStartVertex.y, mouseX, mouseY);
     }
+
+    stroke(0);
+    strokeWeight(3);
+    noFill();
+    rect(0, 0, width, height, 3, 3, 3, 3);
 }
 
 function mousePressed() {

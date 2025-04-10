@@ -33,12 +33,67 @@ class Graph {
     }
 
     update() {
-        if (timer.isOver()) {
-            for (let v of this.vertices) v.moveToTargetPosition();
+        if (timer.isRunning()) {
+            if (timer.isOver()) {
+                for (let v of this.vertices) v.moveToTargetPosition();
+            }
+            else {
+                for (let v of this.vertices) v.update(timer.getElapsedTimeRate());
+            }
         }
-        else {
-            for (let v of this.vertices) v.update(timer.getElapsedTimeRate());
+
+        if (physicsOn) this.applyPhysics();
+    }
+
+    applyPhysics() {
+        // 정점간 척력, 거리제곱에 반비례하게
+        const repulsionStrength = 3000;
+        for (let i = 0; i < this.vertices.length; i++) {
+            for (let j = i + 1; j < this.vertices.length; j++) {
+                const a = this.vertices[i];
+                const b = this.vertices[j];
+                let dir = createVector(a.x - b.x, a.y - b.y);
+                let dist = max(dir.mag(), 10);
+                let force = dir.normalize().mult(repulsionStrength / (dist * dist));
+                a.applyForce(force);
+                b.applyForce(force.mult(-1));
+            }
         }
+        
+        // 화면 중앙 방향 중력
+        const gravity = 0.05;
+        if (this.vertices.length > 1) { // 한개일 땐 애초에 아무힘도 없는 상황이라 그냥 중력 안 넣는 게 더 자연스러움
+            for (let vertex of this.vertices) {
+                let dir = createVector(width / 2 - vertex.x, height / 2 - vertex.y);
+                let dist = dir.mag();
+                let force = dir.normalize().mult(gravity * Math.pow(dist, 0.4));
+                if (dist > vertexRadius) vertex.applyForce(force); // 화면 중앙에서 진동운동 방지 // TODO 아직 진동 좀 있어서 대안 필요함
+            }
+        }
+
+        // 화면 바깥으로 벗어난 경우 경계 안쪽으로 강한 인력
+        for (let vertex of this.vertices) {
+            let dir = createVector(width / 2 - vertex.x, height / 2 - vertex.y);
+            let force = dir.normalize().mult(5);
+            // if (vertex.x < vertexRadius || vertex.x > width - vertexRadius || vertex.y < vertexRadius || vertex.y > height - vertexRadius) vertex.applyForce(force);
+            if (!between(vertex.x, vertexRadius, width - vertexRadius) || !between(vertex.y, vertexRadius, height - vertexRadius)) vertex.applyForce(force);
+        }
+
+        // 간선은 스프링처럼 취급해서 복원력
+        const springLength = 7 * vertexRadius;
+        const springStrength = 0.1;
+        for (let edge of this.edges) {
+            const a = edge.from;
+            const b = edge.to;
+            let dir = createVector(b.x - a.x, b.y - a.y);
+            let dist = dir.mag();
+            console.log(dist, springLength);
+            let force = dir.normalize().mult(springStrength * (dist - springLength));
+            a.applyForce(force);
+            b.applyForce(force.mult(-1));
+        }
+
+        for (let v of this.vertices) v.applyPhysics();
     }
 
     display() {
