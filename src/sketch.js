@@ -81,7 +81,7 @@ function setup() {
     });
 
     arrangeBtn.elt.addEventListener("click", () => {
-        graph.arrangeVertices(min(height, width) / 2 - vertexRadius * 3);
+        graph.arrangeVertices(min(height, width) / 2 - vertexRadius * 1.5);
     });
     
     undoBtn.elt.addEventListener("click", () => {
@@ -210,18 +210,6 @@ function mouseReleased() {
     selectedVertex = null;
 }
 
-// 정점이동기능 모바일 지원용
-function touchStarted() {
-    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
-    mousePressed();
-    return false;
-}
-function touchEnded() {
-    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
-    selectedVertex = null;
-    return false;
-}
-
 function parseGraphInput() {
     const lines = graphInput.value().trim().split('\n');
     if (lines.length < 1) return null;
@@ -236,11 +224,24 @@ function parseGraphInput() {
         if (tokens.length < 2) return null;
 
         const u = tokens[0], v = tokens[1], w = tokens[2] ?? 0;
-        if (![u, v].every(Number.isInteger) || Number.isNaN(w) || u <= 0 || v <= 0 || u == v) return null;
+        if (![u, v].every(Number.isInteger) || Number.isNaN(w) || u <= 0 || v <= 0) return null;
         n = max(n, u);
         n = max(n, v);
+        if (u == v) continue;
         edges.push([u, v, w]);
     }
 
     return { n, edges };
+}
+
+// 정점이동기능 모바일 지원용
+function touchStarted() {
+    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
+    mousePressed();
+    return false;
+}
+function touchEnded() {
+    if (mouseX < 0 || mouseX > width || mouseY < 0 || mouseY > height) return true;
+    selectedVertex = null;
+    return false;
 }
