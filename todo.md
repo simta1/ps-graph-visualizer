@@ -1,9 +1,6 @@
 undoStack/redoStack 비었을 때 undo/redo버튼 비활성화 표시하는 게 좋을 듯   
-정점정렬 되있는데 정렬버튼 누르면 변한 것도 없는데 undoStack만 쌓임   
 
 parallel edge 막아야 됨   
-
-
 
 일단 undo/redo하면 연결요소 선택 해제되게 해뒀는데 addvertex, addEdge같은거일 때만 해제하게 바꿔야 됨
 

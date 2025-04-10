@@ -125,10 +125,18 @@ class Graph {
     }
 
     arrangeVertices(radius = 150) {
+        let sorted = true;
+        for (let i = 0; i < this.vertices.length; i++) {
+            let theta = 1.5 * PI - 2 * PI * i / (this.vertices.length);
+            let ex = width / 2 + radius * cos(theta);
+            let ey = height / 2 + radius * sin(theta);
+            if (this.vertices[i].x != ex || this.vertices[i].y != ey) sorted = false;
+        }
+        if (sorted) return;
+
         this.backupVertexPositions();
         for (let i = 0; i < this.vertices.length; i++) {
             let theta = 1.5 * PI - 2 * PI * i / (this.vertices.length);
-            
             let ex = width / 2 + radius * cos(theta);
             let ey = height / 2 + radius * sin(theta);
             this.vertices[i].setTargetPosition(ex, ey);
