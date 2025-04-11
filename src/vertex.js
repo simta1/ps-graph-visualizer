@@ -27,23 +27,6 @@ class Vertex {
         this.x += this.vel.x;
         this.y += this.vel.y;
         this.acc.mult(0);
-        
-        // const margin = vertexRadius;
-        // if (this.x < margin) {
-        //     this.x = margin;
-        //     this.vel.x *= -0.7; // 벽 반사, 약간 감쇠
-        // } else if (this.x > width - margin) {
-        //     this.x = width - margin;
-        //     this.vel.x *= -0.7;
-        // }
-
-        // if (this.y < margin) {
-        //     this.y = margin;
-        //     this.vel.y *= -0.7;
-        // } else if (this.y > height - margin) {
-        //     this.y = height - margin;
-        //     this.vel.y *= -0.7;
-        // }
     }
 
     display(visitValue) {

@@ -26,6 +26,7 @@ footer a:hover {
   background-image: linear-gradient(90deg, #b993d6, #8ca6db);
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
