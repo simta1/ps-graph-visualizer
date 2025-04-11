@@ -53,6 +53,7 @@ class Graph {
                 const a = this.vertices[i];
                 const b = this.vertices[j];
                 let dir = createVector(a.x - b.x, a.y - b.y);
+                if (a.x == b.x && a.y == b.y) dir = createVector(random(-1e-3, 1e-3), random(-1e-3, 1e-3));
                 let dist = max(dir.mag(), 10);
                 let force = dir.normalize().mult(repulsionStrength / (dist * dist));
                 a.applyForce(force);
