@@ -7,6 +7,31 @@ canvas {
   display: block;
 }
 
+footer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+footer a {
+  color: #3a3a3a;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-size 0.4s ease;
+}
+
+footer a:hover {
+  /* background-image: linear-gradient(90deg, #ff6ec4, #7873f5, #49c6e5, #1dd1a1, #feca57, #ff9a9e); */
+  background-image: linear-gradient(90deg, #b993d6, #8ca6db);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  letter-spacing: 0.5px;
+}
+
 textarea {
   box-sizing: border-box;
   margin-left: 3px;

@@ -13,6 +13,7 @@ function setup() {
 
     const canvasContainer = createDiv()
         .id('canvas-container')
+        .parent('sketch-holder')
         .style('display', 'flex')
         .style('align-items', 'stretch'); // 자식 요소 높이 동일해짐
 
@@ -23,6 +24,7 @@ function setup() {
     applyInputBtn = createButton("그래프 생성").parent(inputContainer);
 
     const controls = createDiv()
+        .parent('sketch-holder')
         .style('display', 'flex')
         .style('justify-content', 'space-between')
         .style('width', '100%')
@@ -52,7 +54,9 @@ function setup() {
     setTimeout(() => {
         const inputBoxWidth = min(windowWidth / 3, 300);
         const canvasWidth = windowWidth - inputBoxWidth - 5;
-        const canvasHeight = windowHeight - controls.elt.offsetHeight - 20;
+        const footer = document.querySelector('footer');
+        const footerHeight = footer ? footer.offsetHeight : 0;
+        const canvasHeight = windowHeight - controls.elt.offsetHeight - footerHeight - 20;
         resizeCanvas(canvasWidth, canvasHeight);
         inputContainer.style('width', `${inputBoxWidth}px`).style('height', `${canvasHeight}px`);
         
