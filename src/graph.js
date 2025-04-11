@@ -88,7 +88,6 @@ class Graph {
             const b = edge.to;
             let dir = createVector(b.x - a.x, b.y - a.y);
             let dist = dir.mag();
-            console.log(dist, springLength);
             let force = dir.normalize().mult(springStrength * (dist - springLength));
             a.applyForce(force);
             b.applyForce(force.mult(-1));
