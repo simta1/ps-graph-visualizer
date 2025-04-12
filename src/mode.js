@@ -1,6 +1,6 @@
 let isAddEdgeMode = false;
 let componentSelectMode = false;
-let physicsOn = false;
+let physicsOn = true;
 
 const AnimationMode = {
     LINE: 0,

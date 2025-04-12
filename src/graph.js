@@ -68,14 +68,15 @@ class Graph {
                 let dir = createVector(width / 2 - vertex.x, height / 2 - vertex.y);
                 let dist = dir.mag();
                 let force = dir.normalize().mult(gravity * Math.pow(dist, 0.4));
-                if (dist > vertexRadius) vertex.applyForce(force); // 화면 중앙에서 진동운동 방지 // TODO 아직 진동 좀 있어서 대안 필요함
+                if (dist > vertexRadius) vertex.applyForce(force); // 화면 중앙에서 진동운동 방지
             }
         }
 
         // 화면 바깥으로 벗어난 경우 경계 안쪽으로 강한 인력
+        const gravity2 = 5;
         for (let vertex of this.vertices) {
             let dir = createVector(width / 2 - vertex.x, height / 2 - vertex.y);
-            let force = dir.normalize().mult(5);
+            let force = dir.normalize().mult(gravity2);
             // if (vertex.x < vertexRadius || vertex.x > width - vertexRadius || vertex.y < vertexRadius || vertex.y > height - vertexRadius) vertex.applyForce(force);
             if (!between(vertex.x, vertexRadius, width - vertexRadius) || !between(vertex.y, vertexRadius, height - vertexRadius)) vertex.applyForce(force);
         }
@@ -139,7 +140,7 @@ class Graph {
         const action = this.redoStack.pop();
         // console.log("redo", this.redoStack.length, action);
         action();
-    }    
+    }
     
     addVertex(x, y) {
         const vertex = new Vertex(x, y, this.vertices.length + 1);
