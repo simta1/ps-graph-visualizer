@@ -21,7 +21,7 @@ function setup() {
     
     const inputContainer = createDiv().parent(canvasContainer).style('display', 'flex').style('flex-direction', 'column');
     graphInput = createElement('textarea').parent(inputContainer).style('resize', 'none');
-    applyInputBtn = createButton("그래프 생성").parent(inputContainer);
+    applyInputBtn = createButton("그래프 생성(1-based만 가능)").parent(inputContainer);
 
     const controls = createDiv()
         .parent('sketch-holder')

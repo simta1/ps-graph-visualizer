@@ -1,3 +1,6 @@
+그래프 생성 0-based가능하게 바꾸기   
+
+
 undoStack/redoStack 비었을 때 undo/redo버튼 비활성화 표시하는 게 좋을 듯   
 
 parallel edge 막아야 됨   
