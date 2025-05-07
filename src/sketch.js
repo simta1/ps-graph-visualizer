@@ -40,6 +40,7 @@ function setup() {
     redoBtn = createButton("다시 실행(y)").parent(leftControls);
     createElement('br').parent(leftControls);
     componentSelectBtn = createButton("연결요소 선택(c)").parent(leftControls);
+    dfsTreeBtn = createButton("dfs tree 생성(t)").parent(leftControls);
 
     const rightControls = createDiv().parent(controls); // 우측(토글바들)
     edgeModeToggle = createCheckbox("간선 추가 모드(e)", isAddEdgeMode).parent(rightControls);
@@ -108,6 +109,11 @@ function setup() {
         componentSelectMode = true;
         selectedComponent = null;
     });
+    
+    dfsTreeBtn.elt.addEventListener("click", () => {
+        if (!componentSelectMode || !selectedComponent || selectedComponent.length === 0) alert("연결요소 선택 필요");
+        else graph.arrangeAsDfsTree(selectedComponent[0]);
+    });
 
     edgeModeToggle.changed(() => {
         isAddEdgeMode = edgeModeToggle.checked();
@@ -137,6 +143,7 @@ function setup() {
         else if (e.key === "z" || e.key === "Z") undoBtn.elt.click();
         else if (e.key === "y" || e.key === "Y") redoBtn.elt.click();
         else if (e.key === "c" || e.key === "C") componentSelectBtn.elt.click();
+        else if (e.key === "t" || e.key === "T") dfsTreeBtn.elt.click();
         else if (e.key === "e" || e.key === "E") {
             edgeModeToggle.checked(!edgeModeToggle.checked());
             edgeModeToggle.elt.dispatchEvent(new Event("change"));
