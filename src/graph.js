@@ -200,46 +200,66 @@ class Graph {
         timer.start(animationTime);
     }
     
-    arrangeAsDfsTree(root = this.vertices[0], yMargin = 1.5 * vertexRadius) {
-        const countByDepth = [0];
-        const dfsTree = Array(this.vertices.length).fill(null);
+    arrangeAsDfsTree(root = this.vertices[0], margin = 1.5 * vertexRadius) {
+        const depth = Array(this.vertices.length).fill(-1);
+        const childs = Array(this.vertices.length).fill(0);
+        let treeHeight = -1, treeWidth  = -1;
 
         ++this.visitValue;
-        const dfs = (cur, depth) => {
+        const dfs = (cur, curDepth) => {
             cur.visited = this.visitValue;
-            if (countByDepth.length <= depth) countByDepth.push(0);
-            let order = ++countByDepth[depth];
-            dfsTree[cur.id - 1] = { depth, order };
 
-            for (const { next } of [...cur.udj].sort((a, b) => a.next.id - b.next.id)) if (next.visited !== this.visitValue) dfs(next, depth + 1);
+            depth[cur.id - 1] = curDepth;
+            treeHeight = max(treeHeight, curDepth);
+            for (const { next } of [...cur.udj].sort((a, b) => a.next.id - b.next.id)) if (next.visited !== this.visitValue) {
+                ++childs[cur.id - 1];
+                dfs(next, curDepth + 1);
+            }
+            
+            if (childs[cur.id - 1] == 0) ++treeWidth;
         };
-        
         dfs(root, 0);
 
-        const pos = Array(this.vertices.length).fill(null);
-        const xGap = 4 * vertexRadius;
-        const yGap = min((height - 2 * yMargin) / (countByDepth.length - 1), 4.5 * vertexRadius);
-
-        for (let i = 0; i < this.vertices.length; i++) {
-            let v = this.vertices[i];
-            if (v.visited != this.visitValue) pos[i] = { x : v.x, y : v.y };
+        const xGap = min(4 * vertexRadius, treeWidth > 0 ? (width - 2 * margin) / treeWidth : 0);
+        const yGap = min(4.5 * vertexRadius, treeHeight > 0 ? (height - 2 * margin) / treeHeight : 0);
+        
+        const x = Array(this.vertices.length).fill(width / 2);
+        const y = Array(this.vertices.length).fill(height / 2);
+        for (let v of this.vertices) {
+            if (v.visited != this.visitValue) {
+                x[v.id - 1] = v.x;
+                y[v.id - 1] = v.y;
+            }
             else {
-                if (dfsTree[v.id - 1] === null) throw new Error("제발에러나지말아주세요");
-                const { depth, order } = dfsTree[v.id - 1];
-                let x = width / 2 + xGap * (order - (countByDepth[depth] / 2 + 1));
-                let y = yMargin + depth * yGap;
-                pos[i] = { x, y };
+                // x[v.id - 1]는 따로 계산할 거
+                y[v.id - 1] = margin + depth[v.id - 1] * yGap;
             }
         }
 
+        let leafCnt = 0;
+
+        ++this.visitValue;
+        const treeDP = (cur, depth) => { // x[] 계산
+            cur.visited = this.visitValue;
+
+            if (childs[cur.id - 1] === 0) return x[cur.id - 1] = margin + leafCnt++ * xGap;
+
+            x[cur.id - 1] = 0;
+            for (const { next } of [...cur.udj].sort((a, b) => a.next.id - b.next.id)) if (next.visited !== this.visitValue) {
+                x[cur.id - 1] += treeDP(next, depth + 1);
+            }
+            return x[cur.id - 1] /= childs[cur.id - 1];
+        };
+        treeDP(root, 0);
+
         let arranged = true;
         for (let i = 0; i < this.vertices.length; i++) {
-            if (this.vertices[i].x != pos[i].x || this.vertices[i].y != pos[i].y) arranged = false;
+            if (this.vertices[i].x != x[i] || this.vertices[i].y != y[i]) arranged = false;
         }
         if (arranged) return;
     
         this.backupVertexPositions();
-        for (let i = 0; i < this.vertices.length; i++) this.vertices[i].setTargetPosition(pos[i].x, pos[i].y);
+        for (let i = 0; i < this.vertices.length; i++) this.vertices[i].setTargetPosition(x[i], y[i]);
         timer.start(animationTime);
     }
     
