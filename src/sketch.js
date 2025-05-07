@@ -119,8 +119,16 @@ w: 간선 가중치(실수, 생략가능)`);
     });
     
     dfsTreeBtn.elt.addEventListener("click", () => {
-        if (!componentSelectMode || !selectedComponent || selectedComponent.length === 0) alert("연결요소 선택 필요");
-        else graph.arrangeAsDfsTree(selectedComponent[0]);
+        if (!componentSelectMode || !selectedComponent || selectedComponent.length === 0) {
+            alert("연결요소 선택 필요");
+            return;
+        }
+
+        if (physicsOn) {
+            physicsToggle.checked(!physicsToggle.checked());
+            physicsToggle.elt.dispatchEvent(new Event("change"));
+        }
+        graph.arrangeAsDfsTree(selectedComponent[0]);
     });
 
     edgeModeToggle.changed(() => {
