@@ -49,7 +49,7 @@ function setup() {
     directedLabel = createSpan('간선 방향 여부 (d)').parent(directedContainer);
     physicsToggle = createCheckbox('물리 효과 적용 (p)', physicsOn).parent(rightControls);
     const animationContainer = createDiv().style('display', 'flex').style('align-items', 'center').parent(rightControls);
-    animationToggle = createCheckbox('', animationMode === Animation.ELLIPSE).parent(animationContainer);
+    animationToggle = createCheckbox('', animationMode === AnimationMode.ELLIPSE).parent(animationContainer);
     animationLabel = createSpan(`애니메이션 : ${animationMode === AnimationMode.LINE ? '직선' : '곡선'} (a)`).parent(animationContainer);
 
     setTimeout(() => {
