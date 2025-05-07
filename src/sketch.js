@@ -64,21 +64,29 @@ function setup() {
         applyInputBtn.style('margin-bottom', '0px');
         const inputBoxHeight = canvasHeight - applyInputBtn.elt.offsetHeight;
         graphInput.style('width', `${inputBoxWidth}px`).style('height', `${inputBoxHeight}px`)
-            .attribute('placeholder', `입력 형식:\nn m\nu1 v1 w1\nu2 v2 w2\n...\num vm wm\n(간선 가중치 없는 경우 w제외하고 입력)\n\nn: 정점 개수\nm: 간선 개수\nu: 간선 시작점\nv: 간선 도착점\nw: 간선 가중치\nn, m, u, v는 0 이상의 정수, w는 실수`);
+            .attribute('placeholder', `입력 형식:
+n m
+u1 v1 w1
+u2 v2 w2
+...
+um vm wm
+
+n: 정점 개수(0 이상 정수)
+m: 간선 개수(0 이상 정수, 생략가능)
+u: 간선 시작점(자연수)
+v: 간선 도착점(자연수)
+w: 간선 가중치(실수, 생략가능)`);
     }, 0);
 
     applyInputBtn.elt.addEventListener("click", () => {
-        const result = parseGraphInput();
-        if (!result) {
-            alert("입력 형식 잘못됨");
-            return;
+        try {
+            const { n, edges } = parseGraphInput();
+            if (!confirm("그래프 생성은 실행 취소가 불가능합니다.")) return;
+            componentSelectMode = false;
+            graph = new Graph(n, edges);
+        } catch (e) {
+            alert(e.message);
         }
-
-        if (!confirm("그래프 생성은 실행 취소가 불가능합니다.")) return;
-
-        componentSelectMode = false;
-        const { n, edges } = result;
-        graph = new Graph(n, edges);
     });
 
     addVertexBtn.elt.addEventListener("click", () => {
@@ -252,23 +260,34 @@ function mouseReleased() {
 }
 
 function parseGraphInput() {
-    const lines = graphInput.value().trim().split('\n');
-    if (lines.length < 1) return null;
+    const lines = graphInput.value().split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    if (lines.length < 1) throw new Error("입력 비어있음");
 
-    let [n, m] = lines[0].split(' ').map(Number);
-    if (![n, m].every(Number.isInteger)) return null;
+    let tokens = lines[0].split(/\s+/).map(Number);
+    if (!(tokens.length == 1 || tokens.length == 2) || !tokens.every(Number.isInteger)) throw new Error(`${lines[0]} <- 입력 잘못됨
+(n m꼴 입력 필요
+n: 정점 개수(0 이상 정수)
+m: 간선 개수(0 이상 정수, 생략가능))`);
+
+    let n = tokens[0], m = tokens[1] ?? (lines.length - 1);
+    if (n < 0 || m < 0) throw new Error(`${lines[0]} <- 입력 잘못됨\n(n과 m은 0 이상 정수만 가능)`);
 
     const edges = [];
 
     for (let i = 1; i <= m && i < lines.length; i++) {
-        const tokens = lines[i].trim().split(' ').map(Number);
-        if (tokens.length < 2) return null;
+        tokens = lines[i].split(/\s+/).map(Number);
+        if (!(tokens.length == 2 || tokens.length == 3) || tokens.some(Number.isNaN)) throw new Error(`${lines[i]} <- 입력 잘못됨
+(u v w꼴 입력 필요
+u: 간선 시작점(자연수)
+v: 간선 끝점(자연수)
+w: 간선 가중치(실수, 생략 가능))`);
 
         const u = tokens[0], v = tokens[1], w = tokens[2] ?? 0;
-        if (![u, v].every(Number.isInteger) || Number.isNaN(w) || u <= 0 || v <= 0) return null;
+        if (![u, v].every(Number.isInteger) || u <= 0 || v <= 0) throw new Error(`${lines[i]} <- 입력 잘못됨\n(간선의 시작점과 끝점은 자연수만 가능)`);
+
         n = max(n, u);
         n = max(n, v);
-        if (u == v) continue;
+        if (u == v) continue; // self loop
         edges.push([u, v, w]);
     }
 
