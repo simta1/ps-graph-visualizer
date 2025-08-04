@@ -1,2 +1,2 @@
-## ก็็็็็็็็็็็็็ʕ•͡ᴥ•ʔ ก้้้้้้้้้้้   
+# ps-graph-visualizer
 https://simta1.github.io/ps-graph-visualizer/
